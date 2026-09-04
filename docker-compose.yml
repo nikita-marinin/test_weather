@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  weather_db:
+    image: postgres:17
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+      - ./postgresql/backup:/backup
+      - ./postgresql/master/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d/
+    environment:
+      TZ: "GMT-3"
+      PGTZ: "GMT-3"
+      POSTGRES_DB: weather_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwr523asfa
+
+  weather_db_migration:
+    image: weather_db_db_migration
+    build:
+      context: ./db_migration
+    volumes:
+      - ./migration_service/:/src/app
+    command: sh -c "wait-for weather_db:5432 && sleep 10 && alembic upgrade head"
+    links:
+      - weather_db
+    depends_on:
+      - weather_db
+    environment:
+      TZ: "Europe/Moscow"
+      POSTGRES_HOST: weather_db
+      POSTGRES_DB: weather_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwr523asfa
+    restart: on-failure
+
+
+

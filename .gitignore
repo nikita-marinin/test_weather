@@ -1,0 +1,10 @@
+.idea
+.vscode
+*.so
+build/
+*.pyc
+*__pycache__/
+
+postgresql/data/
+postgresql/test/data/
+postgresql/backup
