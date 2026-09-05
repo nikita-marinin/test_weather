@@ -21,7 +21,7 @@ services:
     build:
       context: ./db_migration
     volumes:
-      - ./migration_service/:/src/app
+      - ./db_migration/:/src/app
     command: sh -c "wait-for weather_db:5432 && sleep 10 && alembic upgrade head"
     links:
       - weather_db
