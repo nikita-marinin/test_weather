@@ -35,5 +35,14 @@ services:
       POSTGRES_PASSWORD: qwr523asfa
     restart: on-failure
 
+  weather_qt:
+    build:
+      context: ./qt
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+    command: ./build/qt-widgets-cmake
 
 
