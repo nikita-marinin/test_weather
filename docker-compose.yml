@@ -39,10 +39,16 @@ services:
     build:
       context: ./qt
     volumes:
+      - ./qt:/app
       - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
       - DISPLAY=${DISPLAY:-:0}
       - QT_X11_NO_MITSHM=1
-    command: ./build/qt-widgets-cmake
+      - POSTGRES_HOST: weather_db
+      - POSTGRES_DB: weather_db
+      - POSTGRES_USER: postgres
+      - POSTGRES_PASSWORD: qwr523asfa
+      - POSTGRES_PORT: 5432
+    command: sh -c "cmake -B build -S . && cmake --build build && ./build/qt-widgets-cmake"
 
 

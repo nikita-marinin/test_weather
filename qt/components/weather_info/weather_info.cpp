@@ -6,8 +6,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-static QWidget* createTextWidget()
-{
+static QWidget* createTextWidget(){
     QWidget* textWidget = new QWidget();
     QVBoxLayout* textLayout = new QVBoxLayout(textWidget);
     textLayout->setSpacing(4);
@@ -27,8 +26,7 @@ static QWidget* createTextWidget()
     return textWidget;
 }
 
-static QLabel* createImageLabel()
-{
+static QLabel* createImageLabel(){
     QLabel* imageLabel = new QLabel();
     QPixmap pixmap(":/images/rain.png");
     imageLabel->setPixmap(
@@ -36,11 +34,11 @@ static QLabel* createImageLabel()
     return imageLabel;
 }
 
-QWidget* createWeatherInfoWidget()
-{
+QWidget* createWeatherInfoWidget(){
     QWidget* weatherInfoWidget = new QWidget();
     QHBoxLayout* layout = new QHBoxLayout(weatherInfoWidget);
     layout->addWidget(createImageLabel());
     layout->addWidget(createTextWidget());
+    layout->addStretch();
     return weatherInfoWidget;
 }

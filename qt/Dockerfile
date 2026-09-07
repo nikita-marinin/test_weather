@@ -1,8 +1,9 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
+    git \
     qt6-base-dev \
     qt6-declarative-dev \
     qt6-tools-dev \
@@ -24,9 +25,8 @@ RUN apt-get update && apt-get install -y \
     libxcb-xkb-dev \
     libxkbcommon-dev \
     libxkbcommon-x11-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/* 
 
 WORKDIR /app
 COPY . .
-
-RUN cmake -B build -S . && cmake --build build
