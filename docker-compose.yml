@@ -44,11 +44,11 @@ services:
     environment:
       - DISPLAY=${DISPLAY:-:0}
       - QT_X11_NO_MITSHM=1
-      - POSTGRES_HOST: weather_db
-      - POSTGRES_DB: weather_db
-      - POSTGRES_USER: postgres
-      - POSTGRES_PASSWORD: qwr523asfa
-      - POSTGRES_PORT: 5432
+      - POSTGRES_HOST=weather_db
+      - POSTGRES_DB=weather_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwr523asfa
+      - POSTGRES_PORT=5432
     command: sh -c "cmake -B build -S . && cmake --build build && ./build/qt-widgets-cmake"
 
 

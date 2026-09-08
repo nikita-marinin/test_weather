@@ -5,14 +5,12 @@
 #include <cstdint>
 #include <sqlgen.hpp>
 #include <sqlgen/Varchar.hpp>
-#include <rfl/Date.hpp>
-#include <rfl/Time.hpp>
 
 struct WeatherForecast {
     constexpr static const char* tablename = "weather_forecast";
     sqlgen::PrimaryKey<int32_t, sqlgen::auto_incr> id;
-    rfl::Date observation_date;
-    rfl::Time observation_time;
+    sqlgen::Date observation_date;
+    sqlgen::Timestamp<"%H:%M:%S"> observation_time;
     sqlgen::Varchar<3> feels_like_C;
     sqlgen::Varchar<3> temp_C;
     std::string weather_description_ru;
