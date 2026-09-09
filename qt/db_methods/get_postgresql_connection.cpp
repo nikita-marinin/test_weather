@@ -1,14 +1,21 @@
-#include <sqlgen/postgres.hpp>
+#include "get_postgresql_connection.h"
 
-auto getPostgresqlConnection(){
-    
+#include <cstdlib>
+#include <string>
+
+sqlgen::Result<sqlgen::Ref<sqlgen::postgres::Connection>> getPostgresqlConnection()
+{
     const char* host = std::getenv("POSTGRES_HOST") ? std::getenv("POSTGRES_HOST") : "";
     const char* dbname = std::getenv("POSTGRES_DB") ? std::getenv("POSTGRES_DB") : "";
     const char* user = std::getenv("POSTGRES_USER") ? std::getenv("POSTGRES_USER") : "";
     const char* password = std::getenv("POSTGRES_PASSWORD") ? std::getenv("POSTGRES_PASSWORD") : "";
-    const char* port = std::getenv("POSTGRES_PORT") ? std::getenv("POSTGRES_PORT") : "";
-    
-    auto credentials = sqlgen::postgres::Credentials{
+
+    int port = 5432;
+    if (const char* port_str = std::getenv("POSTGRES_PORT"); port_str && *port_str) {
+        port = std::stoi(port_str);
+    }
+
+    const auto credentials = sqlgen::postgres::Credentials{
         .user = user,
         .password = password,
         .host = host,
@@ -16,7 +23,5 @@ auto getPostgresqlConnection(){
         .port = port
     };
 
-    auto conn = sqlgen::postgres::connect(credentials);
-    return conn;
+    return sqlgen::postgres::connect(credentials);
 }
-
