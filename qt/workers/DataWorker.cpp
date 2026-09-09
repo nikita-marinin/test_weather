@@ -1,7 +1,6 @@
 #include "DataWorker.h"
 #include "weatherForecast.h"
-
-#include <QDebug>
+#include "weatherForecastMethods.h"
 
 #include <format>
 #include <string>
@@ -39,7 +38,7 @@ static QVector<WeatherForecast> toWeatherForecastFromJson(const nlohmann::json& 
             .observation_date = sqlgen::Date(date),
             .observation_time = sqlgen::Timestamp<"%H:%M:%S">(time),
             .feels_like_C = hourly["FeelsLikeC"].get<std::string>(),
-            .temp_C = hourly["FeelsLikeC"].get<std::string>(),
+            .temp_C = hourly["tempC"].get<std::string>(),
             .weather_description_ru = hourly["lang_ru"][0]["value"].get<std::string>(),
             .visibility = hourly["visibility"].get<std::string>(),
             .windspeed_kmph = hourly["windspeedKmph"].get<std::string>(),
@@ -53,12 +52,43 @@ static QVector<WeatherForecast> toWeatherForecastFromJson(const nlohmann::json& 
     return weatherForecastVector;
 }
 
-static void toWeatherForecastFromJsonItem(const nlohmann::json& data)
+static std::vector<WeatherForecast> getForecastsForDelete(std::vector<WeatherForecast> forecastsForInsert)
 {
-    qDebug().noquote() << QString::fromStdString(data.dump(4));
-} 
+    std::vector<WeatherForecast> result;
+    for (int i = 0; i < forecastsForInsert.size(); i++) {
+        bool isDuplicate = false;
+        for (int j = 0; j < result.size(); j++) {
+            if (forecastsForInsert[i].observation_date.str() == result[j].observation_date.str()
+                && forecastsForInsert[i].observation_time.str() == result[j].observation_time.str()) {
+                break;
+            }
+            else result.push_back(forecastsForInsert[i]);
+        }
+    }
+    return result;
+}
+
+static std::vector<WeatherForecast> getForecastsForInsert(QVector<WeatherForecast> dataForCheck){
+    std::vector<WeatherForecast> forecastsForInsert;
+    for (int i = 0; i < dataForCheck.size(); i++) {
+        auto forecastsByData = selectWeatherForecastByData(dataForCheck[i]);
+        if (forecastsByData.size() == 0) {
+            forecastsForInsert.push_back(dataForCheck[i]);
+        }
+    }
+    return forecastsForInsert;
+}
 
 void DataWorker::onWeatherDataParsed(const nlohmann::json& data)
 {
-    toWeatherForecastFromJson(data);
+    QVector<WeatherForecast> forecastsFromJson = toWeatherForecastFromJson(data);
+    std::vector<WeatherForecast> forecastsForInsert = getForecastsForInsert(forecastsFromJson);
+    std::vector<WeatherForecast> forecastsForDelete = getForecastsForDelete(forecastsForInsert);
+    
+    if (!forecastsForDelete.empty()) {
+        deleteWeatherForecastByDateTime(forecastsForDelete);
+    } 
+    if (!forecastsForInsert.empty()) {
+        insertWeatherForecasts(forecastsForInsert);
+    }
 }

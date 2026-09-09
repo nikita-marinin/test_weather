@@ -27,4 +27,7 @@ private:
     ParseWorker* parseWorker;
 };
 
+signals:
+    void drowWeatherWidgets()
+
 #endif

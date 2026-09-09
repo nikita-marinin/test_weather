@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 
 #include "weatherForecastMethods.h"
+#include "weatherForecast.h"
 
 class DataWorker : public QObject
 {
