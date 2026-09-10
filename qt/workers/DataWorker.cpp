@@ -10,9 +10,10 @@ DataWorker::DataWorker(QObject *parent)
 {
 }
 
-void DataWorker::getDataByDate(sqlgen::Date date)
+void DataWorker::getDataByDate(QDate date)
 {
-    auto records = selectWeatherForecastByDate(date);
+    auto records = selectWeatherForecastByDate(
+        sqlgen::Date(date.toString(Qt::ISODate).toStdString()));
     QVector<WeatherForecast> data(records.begin(), records.end());
     emit dataReady(data);
 }
