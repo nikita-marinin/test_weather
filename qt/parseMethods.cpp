@@ -7,8 +7,8 @@
 nlohmann::json parseData()
 {
     httplib::Client cli("https://wttr.in");
-    cli.set_connection_timeout(10, 0);
-    cli.set_read_timeout(10, 0);
+    cli.set_connection_timeout(60, 0);
+    cli.set_read_timeout(60, 0);
 
     const std::string path = "/смоленск?format=j1&lang=ru";
     auto res = cli.Get(path.c_str());

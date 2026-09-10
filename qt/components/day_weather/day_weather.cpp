@@ -1,18 +1,21 @@
 #include "day_weather.h"
 #include "weather_info.h"
+#include "weatherForecast.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSizePolicy>
+#include <QString>
 #include <QStringList>
 #include <QVBoxLayout>
 #include <QWidget>
 
-static QWidget* createDateWidget()
+static QWidget* createDateWidget(const QDateTime& currentDate)
 {
     QWidget* dateWidget = new QWidget();
     QHBoxLayout* dateLayout = new QHBoxLayout(dateWidget);
-    QLabel* dateLabel = new QLabel("<b>07.09.2026</b>");
+    QLabel* dateLabel = new QLabel(
+        QString("<b>Погода за %1</b>").arg(currentDate.toString("dd.MM.yyyy")));
     dateLayout->addWidget(dateLabel);
     return dateWidget;
 }
@@ -32,13 +35,13 @@ static QWidget* createDaysWidget()
     return daysWidget;
 }
 
-static QWidget* createWeatherListWidget()
+static QWidget* createWeatherListWidget(const QVector<WeatherForecast>& weatherForecasts)
 {
     QWidget* weatherListWidget = new QWidget();
     QHBoxLayout* weatherListLayout = new QHBoxLayout(weatherListWidget);
 
-    for (int i = 0; i < 4; i++) {
-        QWidget* weatherInfo = createWeatherInfoWidget();
+    for (int i = 0; i < weatherForecasts.size(); i++) {
+        QWidget* weatherInfo = createWeatherInfoWidget(weatherForecasts[i]);
         weatherInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         weatherListLayout->addWidget(weatherInfo);
     }
@@ -46,12 +49,13 @@ static QWidget* createWeatherListWidget()
     return weatherListWidget;
 }
 
-QWidget* createDayWeatherWidget()
+QWidget* createDayWeatherWidget(const QVector<WeatherForecast>& weatherForecasts,
+                                const QDateTime& currentDate)
 {
     QWidget* dayWeatherWidget = new QWidget();
     QVBoxLayout* layout = new QVBoxLayout(dayWeatherWidget);
-    layout->addWidget(createDateWidget());
+    layout->addWidget(createDateWidget(currentDate));
     layout->addWidget(createDaysWidget());
-    layout->addWidget(createWeatherListWidget());
+    layout->addWidget(createWeatherListWidget(weatherForecasts));
     return dayWeatherWidget;
 }
