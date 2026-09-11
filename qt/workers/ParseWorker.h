@@ -2,6 +2,7 @@
 #define PARSEWORKER_H
 
 #include <QObject>
+#include <QString>
 #include <nlohmann/json.hpp>
 
 class ParseWorker : public QObject
@@ -15,6 +16,7 @@ public slots:
 
 signals:
     void dataParsed(const nlohmann::json& data);
+    void parseError(const QString& error);
 };
 
 #endif

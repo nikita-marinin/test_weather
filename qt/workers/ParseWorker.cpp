@@ -10,5 +10,9 @@ ParseWorker::ParseWorker(QObject *parent)
 void ParseWorker::parseWeatherData()
 {
     auto data = parseData();
-    emit dataParsed(data);
+    if (data.contains("error")) {
+        emit parseError(QString::fromStdString(data["error"].get<std::string>()));
+    } else {
+        emit dataParsed(data);
+    }
 }

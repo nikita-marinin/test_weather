@@ -63,6 +63,7 @@ add_executable(qt-widgets-cmake
     workers/ParseWorker.cpp
     components/weather_info/weather_info.cpp
     components/day_weather/day_weather.cpp
+    components/inputDate/InputDate.cpp
     components/images/images.qrc
 )
 
@@ -73,6 +74,7 @@ target_include_directories(qt-widgets-cmake PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/db_methods/models
     ${CMAKE_CURRENT_SOURCE_DIR}/components/weather_info
     ${CMAKE_CURRENT_SOURCE_DIR}/components/day_weather
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/inputDate
 )
 
 target_link_libraries(qt-widgets-cmake PRIVATE 

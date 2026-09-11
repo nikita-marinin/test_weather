@@ -4,8 +4,11 @@
 #include "DataWorker.h"
 #include "ParseWorker.h"
 #include "weatherForecast.h"
+#include "InputDate.h"
+
 
 #include <QLabel>
+#include <QSizePolicy>
 #include <QString>
 #include <QStringList>
 #include <QTime>
@@ -16,8 +19,13 @@ Form::Form(QWidget *parent) : QWidget(parent){
     dayWeather = nullptr;
     currentDate = QDateTime::currentDateTime();
     mainLayout = new QVBoxLayout(this);
-    dateLabel = new QLabel("Загрузка данных ис БД");    
-    mainLayout->addWidget(dateLabel);
+    dateLabel = new QLabel("Загрузка данных из БД");
+    inputDate = new InputDate(this);
+    errorLabel = nullptr;
+    inputDate->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    mainLayout->insertWidget(0, dateLabel);
+    mainLayout->addStretch();
+    mainLayout->addWidget(inputDate);
     setWindowTitle("Test Weather");
 
     dataWorker = new DataWorker(this);
@@ -28,7 +36,11 @@ Form::Form(QWidget *parent) : QWidget(parent){
             dataWorker, &DataWorker::onWeatherDataParsed);
     connect(dataWorker, &DataWorker::dataReady,
             this, &Form::drowWeatherWidgets);
-    
+    connect(inputDate, &InputDate::inputDate,
+            this, &Form::changeDate);
+    connect(parseWorker, &ParseWorker::parseError,
+            this, &Form::showError);
+
     dataWorker->requestParseWeatherData();
     dataWorker->getDataByDate(currentDate.date());
 }
@@ -58,15 +70,15 @@ void Form::insertWeather(QVector<WeatherForecast> weatherForecasts){
         mainLayout->insertWidget(0, dateLabel);
         return;
     }
-    dateLabel = new QLabel(QString("Погода сейчас"));
     dayWeather = createDayWeatherWidget(getDayWeatherForecasts(weatherForecasts), currentDate);
-    mainLayout->insertWidget(0, dateLabel);
     if (currentDate.date() == QDate::currentDate()) {
+        dateLabel = new QLabel(QString("Погода сейчас"));
+        mainLayout->insertWidget(0, dateLabel);
         weatherInfo = createWeatherInfoWidget(getCurrentWeatherForecast(weatherForecasts));
         mainLayout->insertWidget(1, weatherInfo);
         mainLayout->insertWidget(2, dayWeather);
     } else {
-        mainLayout->insertWidget(1, dayWeather);
+        mainLayout->insertWidget(0, dayWeather);
     }
 }
 
@@ -108,3 +120,24 @@ QVector<WeatherForecast> Form::getDayWeatherForecasts(QVector<WeatherForecast>& 
     return result;
 }
 
+void Form::changeDate(const QDate& newDate)
+{
+    currentDate.setDate(newDate);
+    dataWorker->getDataByDate(currentDate.date());
+}
+
+void Form::showError(const QString& error)
+{
+    if (errorLabel) {
+        mainLayout->removeWidget(errorLabel);
+        delete errorLabel;
+        errorLabel = nullptr;
+    }
+    errorLabel = new QLabel("Не удалось спарсить сегодняшние данные по причине: " + error);
+    int index = mainLayout->indexOf(inputDate);
+    if (index < 0) {
+        mainLayout->addWidget(errorLabel);
+    } else {
+        mainLayout->insertWidget(index, errorLabel);
+    }
+}
