@@ -3,6 +3,7 @@
 
 #include "weatherForecast.h"
 
+#include <QDate>
 #include <QDateTime>
 #include <QLabel>
 #include <QVector>
@@ -11,6 +12,7 @@
 
 class DataWorker;
 class ParseWorker;
+class InputDate;
 
 class Form : public QWidget
 {
@@ -24,6 +26,8 @@ private:
     void insertWeather(QVector<WeatherForecast> weatherForecasts);
     WeatherForecast getCurrentWeatherForecast(QVector<WeatherForecast>& weatherForecasts);
     static QVector<WeatherForecast> getDayWeatherForecasts(QVector<WeatherForecast>& weatherForecasts);
+    void changeDate(const QDate& newDate);
+    void showError(const QString& error);
 
 public slots:
     void drowWeatherWidgets(const QVector<WeatherForecast>& weatherForecasts);
@@ -33,9 +37,11 @@ private:
     QWidget* dayWeather;
     QWidget* weatherInfo;
     QLabel* dateLabel;
+    QLabel* errorLabel;
     QDateTime currentDate;
     DataWorker* dataWorker;
     ParseWorker* parseWorker;
+    InputDate* inputDate;
 };
 
 #endif

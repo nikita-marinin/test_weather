@@ -1,7 +1,6 @@
 #include "parseMethods.h"
 #include "httplib.h"
 
-#include <stdexcept>
 #include <string>
 
 nlohmann::json parseData()
@@ -13,13 +12,17 @@ nlohmann::json parseData()
     const std::string path = "/смоленск?format=j1&lang=ru";
     auto res = cli.Get(path.c_str());
     if (!res) {
-        throw std::runtime_error("Не удалось получить ответ от сервера");
+        nlohmann::json json;
+        json["error"] = "Не удалось получить ответ от сервера";
+        return json;
     }
 
     try {
-        Json data = Json::parse(res->body);
-        return data;
-    } catch (const Json::parse_error&) {
-        throw std::runtime_error("Не удалось ответ преобразовать в json ответ от сервера");
+        nlohmann::json json = nlohmann::json::parse(res->body);
+        return json;
+    } catch (const nlohmann::json::parse_error&) {
+        nlohmann::json json;
+        json["error"] = "Не удалось ответ преобразовать в json ответ от сервера";
+        return json;
     }
 }
